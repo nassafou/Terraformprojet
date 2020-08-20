@@ -2,5 +2,9 @@
   "registry.terraform.io/hashicorp/null": {
     "hash": "h1:CFnENdqQu4g3LJNevA32aDxcUz2qGkRGQpFfkI8TCdE=",
     "version": "2.1.2"
+  },
+  "registry.terraform.io/terraform-providers/docker": {
+    "hash": "h1:06EZRBUCgKAVbtwOtE2I0giBUcpgENy+NUUMM88+siY=",
+    "version": "2.7.2"
   }
 }
