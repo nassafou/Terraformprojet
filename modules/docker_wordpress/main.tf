@@ -16,6 +16,25 @@ resource "null_resource" "ssh_target" {
 provider "docker" {
   host = "tcp://${var.ssh_host}:2375"
 }
+
+data "docker_registry_image" "mysql" {
+  name = "mysql:5.7"
+}
+
+data "docker_registry_image" "wordpress" {
+  name = "wordpress:latest"
+}
+
+resource "docker_image" "mysql" {
+  name          = data.docker_registry_image.mysql.name
+  pull_triggers = [ data.docker_registry_image.mysql.sha256_digest ]
+}
+
+resource "docker_image" "wordpress" {
+  name          = data.docker_registry_image.wordpress.name
+  pull_triggers = [ data.docker_registry_image.wordpress.sha256_digest ]
+}
+
 resource "docker_volume" "db_data" {
   name = "db_data"
   driver = "local"
@@ -32,7 +51,7 @@ resource "docker_network" "wordpress" {
 
 resource "docker_container" "db" {
   name  = "db"
-  image = "mysql:5.7"
+  image = docker_image.mysql.latest
   restart = "always"
   env = [
      "MYSQL_ROOT_PASSWORD=wordpress",
@@ -51,7 +70,7 @@ resource "docker_container" "db" {
 }
 resource "docker_container" "wordpress" {
   name  = "wordpress"
-  image = "wordpress:latest"
+  image = docker_image.wordpress.latest
   restart = "always"
   networks_advanced {
     name = docker_network.wordpress.name
